@@ -3,7 +3,7 @@ from datetime import date, datetime
 from typing import Optional, List
 from models.models import UserType, AppointmentStatus, RequestStatus
 
-#! SCHEMAS
+#schemas
 
 class UserBase(BaseModel):
     email: EmailStr
@@ -11,26 +11,26 @@ class UserBase(BaseModel):
     type: UserType
     
 class UserCreate(UserBase):
-    password: str
-    speciality: Optional[str] = None
+    password : str
+    specialty: Optional[str] = None
     crp: Optional[str] = None
     phone: Optional[str] = None
-    birth_date: str
-    
+    birth_date: date
+
 class UserLogin(BaseModel):
     email: EmailStr
     password: str
     
 class User(UserBase):
     id: int
-    speciality: Optional[str] = None
+    specialty: Optional[str] = None
     crp: Optional[str] = None
     phone: Optional[str] = None
     created_at: datetime
     
     class Config:
         from_attributes = True
-        
+
 class Token(BaseModel):
     access_token: str
     token_type: str
@@ -42,15 +42,15 @@ class PatientBase(BaseModel):
     phone: str
     birth_date: date
     
-class Patient_created(PatientBase):
-    psychologist_id : int
+class PatientCreate(PatientBase):
+    psychologist_id: int
     
 class Patient(PatientBase):
     id: int
     age: int
     status: str
     psychologist_id: Optional[str] = None
-    total_session = Optional[int] = 0
+    total_session: Optional[int] = 0
     created_at: datetime
     
     class Config:
@@ -62,20 +62,20 @@ class AppointmentBase(BaseModel):
     date: date
     time: str
     description: str
-    duration: Optional[int] = 50
-
+    duration: Optional[int]= 50
+    
 class AppointmentCreate(AppointmentBase):
     pass
-    
+
 class AppointmentUpdate(AppointmentBase):
     date: Optional[date]= None
     time: Optional[str]= None
-    status: Optional[AppointmentStatus] = None
-    description: Optional[str] = None
-    duration: Optional[int] = 50
-    notes: Optional[str] = None
-    full_report: Optional[str] = None 
-    
+    status: Optional[AppointmentStatus]= None
+    description: Optional[str]= None
+    duration: Optional[int]= 50
+    notes: Optional[str]= None
+    full_report: Optional[str]= None
+
 class RequestBase(BaseModel):
     patient_name: str
     patient_email: EmailStr
@@ -88,19 +88,19 @@ class RequestBase(BaseModel):
     
 class RequestCreate(RequestBase):
     pass
-    
+
 class RequestUpdate(BaseModel):
     status: RequestStatus
-    notes: Optional[str] = None
+    notes: Optional[str]= None
     
 class Request(RequestBase):
     id: int
     status: RequestStatus
     notes: str
     created_at: datetime
-    updated_at: Optional[str] = None
-    
-    class Config:
+    updated_at: Optional[datetime]= None
+     
+    class config:
         from_attributes = True
         
 class Psychologist(BaseModel):
@@ -108,23 +108,21 @@ class Psychologist(BaseModel):
     name: str
     specialty: str
     crp: str
-
+    
     class config:
         from_attributes = True
-
-
+        
 class ReportStats(BaseModel):
     active_patients: int
     total_sessions: int
     completed_session: int
-    attendance_rate: str
+    attendace_rate: str
     risk_alerts: int
-
-
+    
 class FrequencyData(BaseModel):
     month: str
     session: int
-    
+
 class StatusData(BaseModel):
     name: str
     value: int
@@ -142,4 +140,4 @@ class ReportsData(BaseModel):
     frequency_data: List[FrequencyData]
     status_data: List[StatusData]
     patient_data: List[StatusData]
-    risk_alert: List[RiskAlert]
+    risk_alerts: List[RiskAlert] 
