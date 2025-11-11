@@ -2,7 +2,7 @@ import os
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from core.database import engine, Base
-from routers import auth, patients, psychologists
+from routers import auth, patients, psychologists, appointments, reports, requests, ml_analysis
 from dotenv import load_dotenv
 
 # Carrega variáveis de ambiente
@@ -31,6 +31,11 @@ app.add_middleware(
 app.include_router(auth.router)
 app.include_router(patients.router)
 app.include_router(psychologists.router)
+app.include_router(appointments.router)
+app.include_router(requests.router)
+app.include_router(reports.router)
+app.include_router(ml_analysis.router)
+
 
 
 @app.get("/")
