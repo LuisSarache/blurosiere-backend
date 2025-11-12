@@ -36,6 +36,35 @@ async def get_appointments(
 
 
 # ===========================================
+# 1.5️⃣ Obter detalhes de um agendamento
+# ===========================================
+@router.get("/{appointment_id}", response_model=AppointmentSchema)
+async def get_appointment(
+    appointment_id: int,
+    current_user: User = Depends(get_current_user),
+    db: Session = Depends(get_db)
+):
+    if current_user.type != UserType.PSICOLOGO:
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail="Apenas psicólogos podem visualizar detalhes de agendamentos."
+        )
+
+    appointment = db.query(Appointment).filter(
+        Appointment.id == appointment_id,
+        Appointment.psychologist_id == current_user.id
+    ).first()
+
+    if not appointment:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail="Agendamento não encontrado."
+        )
+
+    return appointment
+
+
+# ===========================================
 # 2️⃣ Criar novo agendamento
 # ===========================================
 @router.post("/", response_model=AppointmentSchema)

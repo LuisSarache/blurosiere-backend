@@ -167,8 +167,8 @@ class RiskAlert(BaseModel):
     date: str
 
 class ReportsData(BaseModel):
-    status: ReportStats
+    stats: ReportStats
     frequency_data: List[FrequencyData]
     status_data: List[StatusData]
-    patient_data: List[StatusData]
+    patients_data: List[StatusData]
     risk_alerts: List[RiskAlert]

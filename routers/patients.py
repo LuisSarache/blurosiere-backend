@@ -38,10 +38,45 @@ async def get_patients(
             Appointment.psychologist_id == current_user.id
         ).count()
         # Adiciona atributo "total_sessions" dinamicamente ao paciente
-        patient.total_sessions = total_sessions
+        patient.total_session = total_sessions
     
     # Retorna a lista de pacientes com o total de sessões
     return patients
+
+# ======================================
+# Rota para obter detalhes de um paciente
+# ======================================
+@router.get("/{patient_id}", response_model=PatientSchema)
+async def get_patient(
+    patient_id: int,
+    current_user: User = Depends(get_current_user),
+    db: Session = Depends(get_db)
+):
+    if current_user.type != UserType.PSICOLOGO:
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail="Apenas psicólogos podem acessar detalhes de pacientes"
+        )
+    
+    patient = db.query(Patient).filter(
+        Patient.id == patient_id,
+        Patient.psychologist_id == current_user.id
+    ).first()
+    
+    if not patient:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail="Paciente não encontrado"
+        )
+    
+    # Calcula total de sessões
+    total_sessions = db.query(Appointment).filter(
+        Appointment.patient_id == patient.id,
+        Appointment.psychologist_id == current_user.id
+    ).count()
+    patient.total_session = total_sessions
+    
+    return patient
 
 # ======================================
 # Rota para criar um novo paciente
