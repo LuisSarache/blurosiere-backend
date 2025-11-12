@@ -1,5 +1,6 @@
 # Importações necessárias
 import os  # Para acessar variáveis de ambiente do sistema
+import hashlib  # Para hash SHA-256 de senhas longas
 from datetime import datetime, date, timezone, timedelta  # Para manipular datas e tempos
 from passlib.context import CryptContext  # Biblioteca para hash e verificação de senhas
 from jose import JWTError, jwt  # Biblioteca para criação e validação de tokens JWT

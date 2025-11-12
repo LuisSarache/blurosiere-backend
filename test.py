@@ -67,12 +67,14 @@ class TestRunner:
         print(f"\n{Colors.OKBLUE}📋 TESTANDO SOLICITAÇÕES (/requests){Colors.RESET}")
 
         # GET
-        response = self.get("/requests/")
+        response = self.get("/requests")
         if response.status_code == 200:
             requests_data = response.json()
             print(f"{Colors.OKGREEN}✅ Listagem retornou {len(requests_data)} solicitações.{Colors.RESET}")
         elif response.status_code == 403:
             print(f"{Colors.WARNING}⚠️ Usuário não é psicólogo — acesso negado (403).{Colors.RESET}")
+        elif response.status_code == 500:
+            print(f"{Colors.FAIL}❌ Erro interno do servidor (500). Resposta: {response.text}{Colors.RESET}")
         else:
             print(f"{Colors.FAIL}❌ Erro na listagem ({response.status_code}): {response.text}{Colors.RESET}")
 
@@ -86,10 +88,10 @@ class TestRunner:
             "description": "Solicitação automática de teste.",
             "preferred_dates": ["2025-11-15", "2025-11-16"],
             "preferred_times": ["09:00", "14:00"],
-            "urgency": "normal"  # 🔥 Campo obrigatório adicionado
+            "urgency": "media"
         }
 
-        response = self.post("/requests/", request_data)
+        response = self.post("/requests", request_data)
         if response.status_code == 200:
             created_request = response.json()
             print(f"{Colors.OKGREEN}✅ Solicitação criada com ID {created_request['id']}{Colors.RESET}")
@@ -100,11 +102,11 @@ class TestRunner:
 
         # PUT
         print(f"\n{Colors.OKCYAN}✏️ Atualizando status da solicitação...{Colors.RESET}")
-        response = self.get("/requests/")
+        response = self.get("/requests")
         if response.status_code == 200 and response.json():
             request_id = response.json()[0]["id"]
             update_data = {
-                "status": "aceito",  # 🔥 Enum deve ser minúsculo
+                "status": "approved",
                 "notes": "Solicitação aprovada automaticamente para testes."
             }
             response = self.put(f"/requests/{request_id}", update_data)

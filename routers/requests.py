@@ -34,8 +34,14 @@ def get_requests(
  
     # Converte os campos preferred_dates e preferred_times de JSON para listas antes de retornar
     for req in requests:
-        req.preferred_dates = json.loads(req.preferred_dates) if req.preferred_dates else []
-        req.preferred_times = json.loads(req.preferred_times) if req.preferred_times else []
+        try:
+            req.preferred_dates = json.loads(req.preferred_dates) if req.preferred_dates else []
+        except (json.JSONDecodeError, TypeError):
+            req.preferred_dates = []
+        try:
+            req.preferred_times = json.loads(req.preferred_times) if req.preferred_times else []
+        except (json.JSONDecodeError, TypeError):
+            req.preferred_times = []
  
     return requests
  
@@ -72,6 +78,7 @@ def create_request(
         patient_phone=request_data.patient_phone,
         preferred_psychologist=request_data.preferred_psychologist,
         description=request_data.description,
+        urgency=request_data.urgency,
         preferred_dates=json.dumps(request_data.preferred_dates),
         preferred_times=json.dumps(request_data.preferred_times),
         status=RequestStatus.PENDENTE
@@ -129,8 +136,14 @@ def update_request(
     db.refresh(request)
  
     # Converte novamente os campos JSON para lista antes de retornar
-    request.preferred_dates = json.loads(request.preferred_dates) if request.preferred_dates else []
-    request.preferred_times = json.loads(request.preferred_times) if request.preferred_times else []
+    try:
+        request.preferred_dates = json.loads(request.preferred_dates) if request.preferred_dates else []
+    except (json.JSONDecodeError, TypeError):
+        request.preferred_dates = []
+    try:
+        request.preferred_times = json.loads(request.preferred_times) if request.preferred_times else []
+    except (json.JSONDecodeError, TypeError):
+        request.preferred_times = []
  
     return request
  

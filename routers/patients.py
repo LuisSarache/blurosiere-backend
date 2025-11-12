@@ -6,7 +6,7 @@ from core.database import get_db  # Função que retorna uma sessão do banco de
 from models.models import Patient, User, Appointment, UserType  # Importa os modelos do banco de dados
 from schemas.schemas import PatientCreate, Patient as PatientSchema  # Importa schemas para validação e resposta
 from services.auth_service import get_current_user  # Função que retorna o usuário autenticado
-from Utils import calculate_age  # Função auxiliar para calcular idade a partir da data de nascimento
+from utils import calculate_age  # Função auxiliar para calcular idade a partir da data de nascimento
 
 # Criação do roteador FastAPI para a entidade "patients"
 router = APIRouter(prefix="/patients", tags=["patients"])

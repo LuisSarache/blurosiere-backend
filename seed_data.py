@@ -1,7 +1,7 @@
 from sqlalchemy.orm import Session
 from core.database import SessionLocal, engine
 from models.models import Base, User, Patient, Appointment, Request, UserType, AppointmentStatus, RequestStatus
-from Utils import get_password_hash
+from utils import get_password_hash
 from datetime import date, datetime, timedelta
 import json
 # Cria as tabelas
