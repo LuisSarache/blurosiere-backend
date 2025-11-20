@@ -1,89 +1,134 @@
 # Blurosiere Backend
 
-Sistema completo de agendamento psicológico desenvolvido com FastAPI, incluindo análise de risco com Machine Learning.
+<div align="center">
+  <h3>🌹 Sistema Completo de Agendamento Psicológico 🌹</h3>
+  <p>API moderna desenvolvida com FastAPI, incluindo análise de risco com Machine Learning</p>
+  
+  ![Python](https://img.shields.io/badge/Python-3.11+-blue.svg)
+  ![FastAPI](https://img.shields.io/badge/FastAPI-0.104+-green.svg)
+  ![SQLAlchemy](https://img.shields.io/badge/SQLAlchemy-2.0+-red.svg)
+  ![License](https://img.shields.io/badge/License-MIT-yellow.svg)
+</div>
 
-## 🚀 Instalação e Execução
+## 🎆 Funcionalidades
 
-### Pré-requisitos
-- Python 3.8+
-- pip
+- 🔐 **Autenticação JWT** - Sistema seguro de login
+- 👥 **Gestão de Pacientes** - CRUD completo com histórico
+- 🧠 **Gestão de Psicólogos** - Perfis e especialidades
+- 📅 **Agendamentos** - Sistema flexível de consultas
+- 📋 **Solicitações** - Workflow de aprovação
+- 📊 **Relatórios** - Estatísticas e dashboards
+- 🤖 **Análise ML** - Detecção de risco com IA
+- 📚 **Documentação** - OpenAPI/Swagger automática
 
-### Configuração
+## 🚀 Instalação Rápida
+
+### Método 1: Instalação Local
+
 ```bash
 # Clone o repositório
-git clone <url-do-repositorio>
+git clone https://github.com/LuisSarache/blurosiere-backend.git
 cd blurosiere-backend
 
-# Instale as dependências
+# Crie ambiente virtual (recomendado)
+python -m venv venv
+source venv/bin/activate  # Linux/Mac
+# ou
+venv\Scripts\activate     # Windows
+
+# Instale dependências
 pip install -r requirements.txt
 
-# Configure o banco de dados
+# Configure variáveis de ambiente
+cp .env.example .env
+# Edite o arquivo .env com suas configurações
+
+# Initialize banco de dados
 python seed_data.py
 
 # Execute o servidor
+python main.py
+# ou
 uvicorn main:app --reload
 ```
 
-O servidor estará disponível em `http://localhost:8000`
+### Método 2: Docker (Recomendado para Produção)
 
-## 📚 Documentação da API
+```bash
+# Clone e entre no diretório
+git clone https://github.com/LuisSarache/blurosiere-backend.git
+cd blurosiere-backend
 
-Acesse `http://localhost:8000/docs` para ver a documentação interativa completa.
+# Execute com Docker Compose
+docker-compose up -d
 
-## 🔐 Autenticação
-
-### Login
-```http
-POST /auth/login
-Content-Type: application/json
-
-{
-  "email": "ana@test.com",
-  "password": "123456"
-}
+# Para ambiente de produção
+docker-compose --profile production up -d
 ```
 
+## 🌍 Acesso
+
+- **API**: http://localhost:8000
+- **Documentação**: http://localhost:8000/docs
+- **Health Check**: http://localhost:8000/health
+- **API Info**: http://localhost:8000/api/v1/info
+
+## 🔑 Autenticação
+
 ### Usuários de Teste
-- **Psicólogos**: 
-  - `ana@test.com` / `123456` (Dra. Ana Costa - TCC)
-  - `carlos@test.com` / `123456` (Dr. Carlos Mendes - Infantil)
-  - `lucia@test.com` / `123456` (Dra. Lucia Ferreira - Familiar)
-- **Paciente**: `paciente@test.com` / `123456`
 
-## 📋 Endpoints Principais
+| Tipo | Email | Senha | Descrição |
+|------|-------|-------|-------------|
+| Psicólogo | `ana@test.com` | `123456` | Dra. Ana Costa - TCC |
+| Psicólogo | `carlos@test.com` | `123456` | Dr. Carlos Mendes - Infantil |
+| Psicólogo | `lucia@test.com` | `123456` | Dra. Lucia Ferreira - Familiar |
+| Paciente | `paciente@test.com` | `123456` | Maria Santos |
 
-### 🔐 Autenticação (/auth)
-- `POST /auth/login` - Login de usuário
-- `POST /auth/register` - Registro de novo usuário
+### Exemplo de Login
 
-### 👥 Pacientes (/patients)
-- `GET /patients/` - Listar pacientes do psicólogo
-- `GET /patients/{id}` - Detalhes de um paciente
-- `POST /patients/` - Cadastrar novo paciente
-- `GET /patients/{id}/sessions` - Sessões do paciente
+```bash
+curl -X POST "http://localhost:8000/api/v1/auth/login" \
+     -H "Content-Type: application/json" \
+     -d '{
+       "email": "ana@test.com",
+       "password": "123456"
+     }'
+```
 
-### 🧠 Psicólogos (/psychologists)
-- `GET /psychologists/` - Listar todos os psicólogos
+## 📚 API Endpoints
 
-### 📅 Agendamentos (/appointments)
-- `GET /appointments/` - Listar agendamentos do psicólogo
-- `GET /appointments/{id}` - Detalhes de um agendamento
-- `POST /appointments/` - Criar novo agendamento
-- `PUT /appointments/{id}` - Atualizar agendamento
-- `DELETE /appointments/{id}` - Cancelar agendamento
-- `GET /appointments/available-times` - Horários disponíveis
+### 🔐 Autenticação (`/api/v1/auth`)
+- `POST /login` - Login de usuário
+- `POST /register` - Registro de novo usuário
 
-### 📋 Solicitações (/requests)
-- `GET /requests/` - Listar solicitações (apenas psicólogos)
-- `POST /requests/` - Criar nova solicitação
-- `PUT /requests/{id}` - Atualizar status da solicitação
+### 👥 Pacientes (`/api/v1/patients`)
+- `GET /` - Listar pacientes do psicólogo
+- `GET /{id}` - Detalhes de um paciente
+- `POST /` - Cadastrar novo paciente
+- `GET /{id}/sessions` - Sessões do paciente
 
-### 📊 Relatórios (/reports)
-- `GET /reports/{psychologist_id}` - Relatório completo do psicólogo
+### 🧠 Psicólogos (`/api/v1/psychologists`)
+- `GET /` - Listar todos os psicólogos
 
-### 🤖 Análise ML (/ml)
-- `GET /ml/risk-analysis` - Análise de risco geral
-- `GET /ml/risk-analysis/{patient_id}` - Análise individual
+### 📅 Agendamentos (`/api/v1/appointments`)
+- `GET /` - Listar agendamentos do psicólogo
+- `GET /{id}` - Detalhes de um agendamento
+- `POST /` - Criar novo agendamento
+- `PUT /{id}` - Atualizar agendamento
+- `DELETE /{id}` - Cancelar agendamento
+- `GET /available-times` - Horários disponíveis
+
+### 📋 Solicitações (`/api/v1/requests`)
+- `GET /` - Listar solicitações (apenas psicólogos)
+- `POST /` - Criar nova solicitação
+- `PUT /{id}` - Atualizar status da solicitação
+
+### 📊 Relatórios (`/api/v1/reports`)
+- `GET /{psychologist_id}` - Relatório completo do psicólogo
+
+### 🤖 Análise ML (`/api/v1/ml`)
+- `GET /risk-analysis` - Análise de risco geral
+- `GET /risk-analysis/{patient_id}` - Análise individual
 
 ## 📝 Exemplos de Uso
 
@@ -112,110 +157,185 @@ Content-Type: application/json
 }
 ```
 
-### Valores Aceitos
-- **Urgency**: `baixa`, `media`, `alta`
-- **Status Solicitação**: `pendente`, `aceito`, `rejeitado`
-- **Status Agendamento**: `agendado`, `concluido`, `cancelado`, `reagendado`
-- **Tipo Usuário**: `psicologo`, `paciente`
+## 🧪 Testes Automatizados
 
-## 🧪 Testes
-
-Execute os testes automatizados completos:
 ```bash
+# Execute todos os testes
 python test_fixed.py
+
+# Testes com pytest (se instalado)
+pytest tests/ -v
+
+# Testes de cobertura
+pytest --cov=. tests/
 ```
 
-Teste específico de autenticação:
-```bash
-python test_debug.py
+### Resultado Esperado
+```
+🧪 INICIANDO TESTES AUTOMATIZADOS - BLUROSIERE API
+============================================================
+🏥 TESTANDO SAÚDE DO SERVIDOR
+✅ Servidor rodando
+✅ Health check
+✅ API info
+
+🔐 TESTANDO AUTENTICAÇÃO
+✅ Login válido - Dra. Ana Costa
+✅ Login inválido rejeitado
+✅ Token válido aceito
+
+📊 RESUMO DOS TESTES
+============================================================
+Total de testes: 15
+Sucessos: 15
+Falhas: 0
+Taxa de sucesso: 100.0%
+🎉 TODOS OS TESTES PASSARAM!
 ```
 
-## 🤖 Funcionalidades de ML
+## 🤖 Análise de Machine Learning
 
-O sistema inclui análise de risco baseada em Machine Learning que avalia:
-- Frequência de consultas
-- Taxa de cancelamentos
-- Tempo desde última consulta
-- Tendências de comparecimento
-- Padrões comportamentais
+O sistema inclui análise de risco baseada em ML que avalia:
+
+- 📈 **Frequência de consultas**
+- ❌ **Taxa de cancelamentos**
+- ⏰ **Tempo desde última consulta**
+- 📉 **Tendências de comparecimento**
+- 🧠 **Padrões comportamentais**
 
 ### Níveis de Risco
-- **Alto**: Score ≥ 70 (requer atenção imediata)
-- **Moderado**: Score 40-69 (monitoramento necessário)
-- **Baixo**: Score < 40 (padrão normal)
+- 🔴 **Alto**: Score ≥ 70 (requer atenção imediata)
+- 🟡 **Moderado**: Score 40-69 (monitoramento necessário)
+- 🟢 **Baixo**: Score < 40 (padrão normal)
 
 ## 📁 Estrutura do Projeto
 
 ```
 blurosiere-backend/
-├── core/
-│   └── database.py          # Configuração do banco SQLite
-├── models/
-│   └── models.py           # Modelos SQLAlchemy
-├── routers/
-│   ├── auth.py            # Autenticação e registro
-│   ├── requests.py        # Solicitações de atendimento
-│   ├── patients.py        # Gestão de pacientes
-│   ├── psychologists.py   # Listagem de psicólogos
-│   ├── appointments.py    # Agendamentos e sessões
-│   ├── reports.py         # Relatórios e estatísticas
-│   └── ml_analysis.py     # Análise de risco ML
-├── schemas/
-│   └── schemas.py         # Schemas Pydantic
-├── services/
-│   ├── auth_service.py    # Serviços de autenticação
-│   ├── report_service.py  # Geração de relatórios
-│   └── ml_service.py      # Algoritmos de ML
-├── main.py               # Aplicação principal FastAPI
-├── seed_data.py         # Dados de teste e seed
-├── utils.py             # Funções utilitárias
-└── requirements.txt     # Dependências Python
+├── 📂 core/                    # Configurações centrais
+│   └── database.py
+├── 📊 models/                  # Modelos de dados
+│   └── models.py
+├── 🛫 routers/                 # Endpoints da API
+│   ├── auth.py
+│   ├── patients.py
+│   ├── psychologists.py
+│   ├── appointments.py
+│   ├── requests.py
+│   ├── reports.py
+│   └── ml_analysis.py
+├── 📝 schemas/                # Validação de dados
+│   └── schemas.py
+├── ⚙️ services/                # Lógica de negócio
+│   ├── auth_service.py
+│   ├── ml_service.py
+│   └── report_service.py
+├── 🐳 Dockerfile               # Container Docker
+├── 🐳 docker-compose.yml      # Orquestração
+├── ⚙️ config.py                # Configurações
+├── 📜 constants.py            # Constantes
+├── 🎨 main.py                 # Aplicação principal
+├── 🌱 seed_data.py            # Dados iniciais
+├── 🧪 test_fixed.py           # Testes automatizados
+└── 📦 requirements.txt        # Dependências
 ```
 
 ## 🔧 Troubleshooting
 
-### Erro 500 em endpoints
-1. Execute `python seed_data.py` para recriar o banco
-2. Verifique se está logado como psicólogo
-3. Confirme que o servidor está rodando
-4. Verifique logs do servidor para detalhes
+### 🔴 Problemas Comuns
 
-### Erro 403 Forbidden
-- Apenas psicólogos podem acessar dados de pacientes
-- Use `ana@test.com` para testes como psicólogo
+| Erro | Causa | Solução |
+|------|-------|----------|
+| 500 Internal Server Error | Banco não inicializado | `python seed_data.py` |
+| 403 Forbidden | Usuário sem permissão | Login como psicólogo |
+| 401 Unauthorized | Token inválido/expirado | Faça login novamente |
+| 422 Validation Error | Dados inválidos | Verifique formato dos dados |
+| 404 Not Found | Endpoint incorreto | Verifique URL e método HTTP |
 
-### Erro 401 Unauthorized
-- Token expirado ou inválido
-- Faça login novamente para obter novo token
+### 🔍 Debug
 
-### Erro 422 Validation Error
-- Dados de entrada inválidos
-- Verifique formato de email, datas e campos obrigatórios
+```bash
+# Verificar logs
+tail -f logs/app.log
 
-### Erro 404 Not Found
-- Verifique se o endpoint existe
-- Confirme IDs de recursos (paciente, agendamento, etc.)
-- Alguns endpoints requerem barra final: `/requests/`
+# Testar conexão
+curl http://localhost:8000/health
 
-## 🎯 Funcionalidades Implementadas
+# Verificar banco de dados
+python -c "from core.database import engine; print(engine.execute('SELECT 1').scalar())"
+```
 
-✅ Sistema completo de autenticação JWT  
-✅ Gestão de pacientes e psicólogos  
-✅ Agendamento de consultas  
-✅ Solicitações de atendimento  
-✅ Relatórios estatísticos  
-✅ Análise de risco com ML  
-✅ Validação de dados com Pydantic  
-✅ Documentação automática OpenAPI  
-✅ Testes automatizados  
-✅ Banco de dados SQLite  
-✅ CORS configurado  
-✅ Tratamento de erros  
+## 🚀 Deploy
 
-## 📈 Próximas Funcionalidades
+### Vercel (Recomendado)
 
-🔄 Sistema de notificações  
-🔄 Integração com calendário  
-🔄 Backup automático  
-🔄 Dashboard web  
-🔄 API de pagamentos  
+1. Conecte seu repositório ao Vercel
+2. Configure as variáveis de ambiente
+3. Deploy automático a cada push
+
+### Docker
+
+```bash
+# Build da imagem
+docker build -t blurosiere-api .
+
+# Execute o container
+docker run -p 8000:8000 blurosiere-api
+```
+
+### Heroku
+
+```bash
+# Login no Heroku
+heroku login
+
+# Crie a aplicação
+heroku create blurosiere-api
+
+# Configure variáveis
+heroku config:set SECRET_KEY=your-secret-key
+
+# Deploy
+git push heroku main
+```
+
+## 📊 Monitoramento
+
+- **Health Check**: `/health`
+- **Métricas**: `/api/v1/info`
+- **Logs**: Estruturados em JSON
+- **Alertas**: Configuráveis por ambiente
+
+## 🔒 Segurança
+
+- 🔐 **JWT Authentication**
+- 🔒 **Password Hashing** (bcrypt)
+- 🚫 **CORS Protection**
+- 🛡️ **Input Validation**
+- 📝 **Request Logging**
+- ⏱️ **Rate Limiting** (configurável)
+
+## 🤝 Contribuição
+
+1. Fork o projeto
+2. Crie uma branch (`git checkout -b feature/nova-funcionalidade`)
+3. Commit suas mudanças (`git commit -am 'Adiciona nova funcionalidade'`)
+4. Push para a branch (`git push origin feature/nova-funcionalidade`)
+5. Abra um Pull Request
+
+## 📜 Licença
+
+Este projeto está sob a licença MIT. Veja o arquivo [LICENSE](LICENSE) para detalhes.
+
+## 📞 Suporte
+
+- 📚 **Documentação**: http://localhost:8000/docs
+- 🐛 **Issues**: [GitHub Issues](https://github.com/LuisSarache/blurosiere-backend/issues)
+- 💬 **Discussões**: [GitHub Discussions](https://github.com/LuisSarache/blurosiere-backend/discussions)
+
+---
+
+<div align="center">
+  <p>Desenvolvido com ❤️ por <a href="https://github.com/LuisSarache">Luis Sarache</a></p>
+  <p>🌹 <strong>Blurosiere</strong> - Cuidando da saúde mental com tecnologia 🌹</p>
+</div>

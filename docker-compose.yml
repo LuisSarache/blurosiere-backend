@@ -1,0 +1,72 @@
+version: '3.8'
+
+services:
+  # API Backend
+  api:
+    build: .
+    container_name: blurosiere-api
+    ports:
+      - "8000:8000"
+    environment:
+      - DEBUG=True
+      - DATABASE_URL=sqlite:///./blurosiere.db
+      - SECRET_KEY=your-super-secret-key-change-in-production-min-32-chars
+    volumes:
+      - ./blurosiere.db:/app/blurosiere.db
+      - ./logs:/app/logs
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8000/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+
+  # PostgreSQL Database (opcional para produção)
+  postgres:
+    image: postgres:15-alpine
+    container_name: blurosiere-db
+    environment:
+      POSTGRES_DB: blurosiere
+      POSTGRES_USER: blurosiere_user
+      POSTGRES_PASSWORD: blurosiere_password
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    ports:
+      - "5432:5432"
+    restart: unless-stopped
+    profiles:
+      - production
+
+  # Redis para cache (opcional)
+  redis:
+    image: redis:7-alpine
+    container_name: blurosiere-redis
+    ports:
+      - "6379:6379"
+    restart: unless-stopped
+    profiles:
+      - production
+
+  # Nginx reverse proxy (opcional para produção)
+  nginx:
+    image: nginx:alpine
+    container_name: blurosiere-nginx
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - ./nginx.conf:/etc/nginx/nginx.conf:ro
+      - ./ssl:/etc/nginx/ssl:ro
+    depends_on:
+      - api
+    restart: unless-stopped
+    profiles:
+      - production
+
+volumes:
+  postgres_data:
+
+networks:
+  default:
+    name: blurosiere-network
