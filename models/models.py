@@ -31,6 +31,9 @@ class User(Base):
     crp = Column(String, nullable=True)
     phone = Column(String, nullable=True)
     created_at = Column(DateTime, default=lambda: datetime.now(timezone.utc))
+    
+    # Relacionamentos
+    refresh_tokens = relationship("RefreshToken", back_populates="user")
 
 class Patient(Base):
     __tablename__ = "patients"
