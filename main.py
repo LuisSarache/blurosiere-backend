@@ -7,7 +7,10 @@ from fastapi.middleware.cors import CORSMiddleware
 from fastapi.middleware.trustedhost import TrustedHostMiddleware
 from fastapi.responses import JSONResponse
 from core.database import engine, Base
-from routers import auth, patients, psychologists, appointments, reports, requests, ml_analysis
+from routers import (
+    auth, patients, psychologists, appointments, reports, requests, ml_analysis,
+    schedule, notifications, chat, dashboard, analytics, search, export
+)
 from dotenv import load_dotenv
 
 # Configuração de logging
@@ -89,6 +92,13 @@ app.include_router(appointments.router, prefix="/api/v1", tags=["Agendamentos"])
 app.include_router(requests.router, prefix="/api/v1", tags=["Solicitações"])
 app.include_router(reports.router, prefix="/api/v1", tags=["Relatórios"])
 app.include_router(ml_analysis.router, prefix="/api/v1", tags=["Análise ML"])
+app.include_router(schedule.router, prefix="/api/v1", tags=["Agenda"])
+app.include_router(notifications.router, prefix="/api/v1", tags=["Notificações"])
+app.include_router(chat.router, prefix="/api/v1", tags=["Chat IA"])
+app.include_router(dashboard.router, prefix="/api/v1", tags=["Dashboard"])
+app.include_router(analytics.router, prefix="/api/v1", tags=["Analytics"])
+app.include_router(search.router, prefix="/api/v1", tags=["Busca"])
+app.include_router(export.router, prefix="/api/v1", tags=["Exportação"])
 
 # Endpoints principais
 @app.get("/", tags=["Sistema"])

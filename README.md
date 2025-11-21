@@ -12,12 +12,22 @@
 
 ## 🎆 Funcionalidades
 
-- 🔐 **Autenticação JWT** - Sistema seguro de login
-- 👥 **Gestão de Pacientes** - CRUD completo com histórico
-- 🧠 **Gestão de Psicólogos** - Perfis e especialidades
-- 📅 **Agendamentos** - Sistema flexível de consultas
-- 📋 **Solicitações** - Workflow de aprovação
-- 📊 **Relatórios** - Estatísticas e dashboards
+### Core
+- 🔐 **Autenticação JWT** - Login, refresh tokens, recuperação de senha
+- 👥 **Gestão de Pacientes** - CRUD completo com histórico e nível de risco
+- 🧠 **Gestão de Psicólogos** - Perfis, especialidades e agendas
+- 📅 **Agendamentos** - Sistema completo de consultas e horários
+- 📋 **Solicitações** - Workflow de aprovação e gestão
+
+### Avançado
+- 📆 **Sistema de Agenda** - Horários, slots e exceções
+- 🔔 **Notificações** - Sistema completo de alertas e lembretes
+- 🤖 **Chat IA** - Assistente virtual inteligente
+- 📊 **Dashboard** - Estatísticas em tempo real
+- 📈 **Analytics** - Métricas avançadas e tendências
+- 🔍 **Busca** - Sistema de busca avançado
+- 📤 **Exportação** - Dados em CSV/Excel
+- 📊 **Relatórios** - Geração automática
 - 🤖 **Análise ML** - Detecção de risco com IA
 - 📚 **Documentação** - OpenAPI/Swagger automática
 
@@ -129,6 +139,40 @@ curl -X POST "http://localhost:8000/api/v1/auth/login" \
 ### 🤖 Análise ML (`/api/v1/ml`)
 - `GET /risk-analysis` - Análise de risco geral
 - `GET /risk-analysis/{patient_id}` - Análise individual
+
+### 📆 Agenda (`/api/v1/schedule`)
+- `GET /` - Listar horários da agenda
+- `POST /` - Criar novo horário
+- `PUT /{id}` - Atualizar horário
+- `DELETE /{id}` - Remover horário
+- `POST /exceptions` - Adicionar exceção
+
+### 🔔 Notificações (`/api/v1/notifications`)
+- `GET /` - Listar notificações
+- `GET /unread-count` - Contador de não lidas
+- `PUT /{id}/read` - Marcar como lida
+- `PUT /read-all` - Marcar todas como lidas
+- `DELETE /{id}` - Remover notificação
+
+### 🤖 Chat IA (`/api/v1/chat`)
+- `POST /message` - Enviar mensagem
+- `GET /history` - Histórico de conversa
+- `DELETE /history` - Limpar histórico
+
+### 📊 Dashboard (`/api/v1/dashboard`)
+- `GET /psychologist` - Dashboard do psicólogo
+- `GET /patient` - Dashboard do paciente
+
+### 📈 Analytics (`/api/v1/analytics`)
+- `GET /overview` - Visão geral de estatísticas
+- `GET /trends` - Tendências e métricas
+
+### 🔍 Busca (`/api/v1/search`)
+- `GET /` - Busca avançada
+
+### 📤 Exportação (`/api/v1/export`)
+- `GET /patients` - Exportar pacientes
+- `GET /appointments` - Exportar agendamentos
 
 ## 📝 Exemplos de Uso
 
