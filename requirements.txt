@@ -24,3 +24,12 @@ python-dotenv>=1.0.0
 
 # Testing
 requests>=2.31.0
+
+# WebSocket
+websockets>=12.0
+
+# Optional Integrations (install as needed)
+# twilio>=8.0.0  # For SMS
+# boto3>=1.28.0  # For AWS S3
+# openai>=1.0.0  # For OpenAI
+# python-multipart>=0.0.6  # For file uploads

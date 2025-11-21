@@ -9,7 +9,7 @@ from fastapi.responses import JSONResponse
 from core.database import engine, Base
 from routers import (
     auth, patients, psychologists, appointments, reports, requests, ml_analysis,
-    schedule, notifications, chat, dashboard, analytics, search, export
+    schedule, notifications, chat, dashboard, analytics, search, export, upload, websocket
 )
 from dotenv import load_dotenv
 
@@ -99,6 +99,8 @@ app.include_router(dashboard.router, prefix="/api/v1", tags=["Dashboard"])
 app.include_router(analytics.router, prefix="/api/v1", tags=["Analytics"])
 app.include_router(search.router, prefix="/api/v1", tags=["Busca"])
 app.include_router(export.router, prefix="/api/v1", tags=["Exportação"])
+app.include_router(upload.router, prefix="/api/v1", tags=["Upload"])
+app.include_router(websocket.router, tags=["WebSocket"])
 
 # Endpoints principais
 @app.get("/", tags=["Sistema"])

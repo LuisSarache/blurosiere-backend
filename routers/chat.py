@@ -5,6 +5,7 @@ from core.database import get_db
 from models.models import ChatMessage, User
 from schemas.advanced_schemas import ChatMessageCreate, ChatMessage as ChatMessageSchema
 from services.auth_service import get_current_user
+from services.ai_service import ai_service
 import json
 
 router = APIRouter(prefix="/chat", tags=["chat"])
@@ -25,8 +26,8 @@ async def send_message(
     db.add(user_message)
     db.commit()
     
-    # Gerar resposta da IA (simulada por enquanto)
-    ai_response = f"Entendo sua mensagem: '{message_data.message}'. Como posso ajudar mais?"
+    # Gerar resposta da IA
+    ai_response = ai_service.generate_response(message_data.message, message_data.context)
     
     # Salvar resposta da IA
     ai_message = ChatMessage(
