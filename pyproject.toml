@@ -1,0 +1,31 @@
+[build-system]
+requires = ["setuptools>=45", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "blurosiere-backend"
+version = "1.0.0"
+description = "Sistema de agendamento psicológico com FastAPI"
+authors = [{name = "Luis Sarache", email = "luis@example.com"}]
+license = {text = "MIT"}
+readme = "README.md"
+requires-python = ">=3.8"
+dependencies = [
+    "fastapi>=0.104.0",
+    "uvicorn[standard]>=0.24.0",
+    "sqlalchemy>=2.0.0",
+    "python-jose[cryptography]>=3.3.0",
+    "passlib[bcrypt]>=1.7.4",
+    "python-multipart>=0.0.6",
+    "python-dotenv>=1.0.0",
+    "pydantic[email]>=2.0.0"
+]
+
+[project.optional-dependencies]
+dev = [
+    "pytest>=7.0.0",
+    "requests>=2.31.0"
+]
+
+[tool.setuptools]
+packages = ["core", "models", "routers", "schemas", "services"]
