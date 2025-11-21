@@ -131,7 +131,7 @@ class ChatMessage(Base):
     user_id = Column(Integer, ForeignKey("users.id"))
     role = Column(String)  # user, assistant
     content = Column(Text)
-    metadata = Column(Text, default="{}")  # JSON
+    meta_data = Column(Text, default="{}")  # JSON
     created_at = Column(DateTime, default=lambda: datetime.now(timezone.utc))
     
     user = relationship("User")

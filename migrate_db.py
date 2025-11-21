@@ -6,12 +6,12 @@ from models.models import *
 from models.refresh_token import RefreshToken
 
 def migrate():
-    print("🔄 Atualizando banco de dados...")
+    print("Atualizando banco de dados...")
     try:
         # Cria todas as tabelas
         Base.metadata.create_all(bind=engine)
-        print("✅ Banco de dados atualizado com sucesso!")
-        print("\n📋 Tabelas criadas/atualizadas:")
+        print("Banco de dados atualizado com sucesso!")
+        print("\nTabelas criadas/atualizadas:")
         print("  - users")
         print("  - patients")
         print("  - appointments")

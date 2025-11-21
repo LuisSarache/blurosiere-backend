@@ -21,7 +21,7 @@ async def send_message(
         user_id=current_user.id,
         role="user",
         content=message_data.message,
-        metadata=json.dumps({"context": message_data.context})
+        meta_data=json.dumps({"context": message_data.context})
     )
     db.add(user_message)
     db.commit()
@@ -34,7 +34,7 @@ async def send_message(
         user_id=current_user.id,
         role="assistant",
         content=ai_response,
-        metadata=json.dumps({})
+        meta_data=json.dumps({})
     )
     db.add(ai_message)
     db.commit()
@@ -57,7 +57,7 @@ async def get_history(
     ).order_by(ChatMessage.created_at.desc()).offset(offset).limit(limit).all()
     
     for msg in messages:
-        msg.metadata = json.loads(msg.metadata) if msg.metadata else {}
+        msg.metadata = json.loads(msg.meta_data) if msg.meta_data else {}
     
     return messages
 
