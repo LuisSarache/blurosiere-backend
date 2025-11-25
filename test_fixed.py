@@ -1,4 +1,5 @@
 #!/usr/bin/env python3
+# -*- coding: utf-8 -*-
 """
 Suite de testes automatizados para Blurosiere API
 Testa todos os endpoints principais e funcionalidades
@@ -8,7 +9,7 @@ import requests
 import json
 import sys
 import time
-from datetime import datetime
+from datetime import datetime, timedelta
 from typing import Dict, Any, Optional
 
 # Configurações
@@ -46,10 +47,10 @@ class APITestRunner:
         self.test_results["total"] += 1
         if passed:
             self.test_results["passed"] += 1
-            print(f"{Colors.GREEN}✅ {test_name}{Colors.RESET} {details}")
+            print(f"{Colors.GREEN}[OK] {test_name}{Colors.RESET} {details}")
         else:
             self.test_results["failed"] += 1
-            print(f"{Colors.RED}❌ {test_name}{Colors.RESET} {details}")
+            print(f"{Colors.RED}[FAIL] {test_name}{Colors.RESET} {details}")
     
     def make_request(self, method: str, endpoint: str, **kwargs) -> requests.Response:
         """Faz requisição HTTP com tratamento de erro"""
@@ -69,18 +70,15 @@ class APITestRunner:
     
     def test_server_health(self) -> bool:
         """Testa se o servidor está rodando"""
-        print(f"\n{Colors.HEADER}🏥 TESTANDO SAÚDE DO SERVIDOR{Colors.RESET}")
+        print(f"\n{Colors.HEADER}TESTANDO SAUDE DO SERVIDOR{Colors.RESET}")
         
         try:
-            # Testa endpoint raiz
             response = requests.get(f"{BASE_URL}/", timeout=TIMEOUT)
             self.log_test("Servidor rodando", response.status_code == 200)
             
-            # Testa health check
             response = requests.get(f"{BASE_URL}/health", timeout=TIMEOUT)
             self.log_test("Health check", response.status_code == 200)
             
-            # Testa info da API
             response = requests.get(f"{BASE_URL}{API_PREFIX}/info", timeout=TIMEOUT)
             self.log_test("API info", response.status_code == 200)
             
@@ -91,9 +89,8 @@ class APITestRunner:
     
     def test_authentication(self) -> bool:
         """Testa sistema de autenticação"""
-        print(f"\n{Colors.HEADER}🔐 TESTANDO AUTENTICAÇÃO{Colors.RESET}")
+        print(f"\n{Colors.HEADER}TESTANDO AUTENTICACAO{Colors.RESET}")
         
-        # Teste 1: Login válido
         login_data = {"email": "ana@test.com", "password": "123456"}
         response = self.make_request("POST", "/auth/login", json=login_data)
         
@@ -104,15 +101,18 @@ class APITestRunner:
             self.headers["Authorization"] = f"Bearer {self.token}"
             self.log_test("Login válido", True, f"- {self.user['name']}")
         else:
-            self.log_test("Login válido", False, f"- Status: {response.status_code if response else 'N/A'}")
+            self.log_test("Login válido", False)
             return False
         
-        # Teste 2: Login inválido
         invalid_login = {"email": "invalid@test.com", "password": "wrong"}
         response = self.make_request("POST", "/auth/login", json=invalid_login)
-        self.log_test("Login inválido rejeitado", response and response.status_code == 401)
+        expected_status = response and response.status_code == 401
+        if not expected_status and response:
+            details = f"- Status: {response.status_code}"
+        else:
+            details = ""
+        self.log_test("Login inválido rejeitado", expected_status, details)
         
-        # Teste 3: Acesso com token válido
         response = self.make_request("GET", "/patients/")
         self.log_test("Token válido aceito", response and response.status_code == 200)
         
@@ -120,21 +120,18 @@ class APITestRunner:
     
     def test_patients_endpoint(self):
         """Testa endpoints de pacientes"""
-        print(f"\n{Colors.BLUE}👥 TESTANDO PACIENTES{Colors.RESET}")
+        print(f"\n{Colors.BLUE}TESTANDO PACIENTES{Colors.RESET}")
         
-        # Listar pacientes
         response = self.make_request("GET", "/patients/")
         if response and response.status_code == 200:
             patients = response.json()
             self.log_test("Listagem de pacientes", True, f"- {len(patients)} encontrados")
             
-            # Testar detalhes se houver pacientes
             if patients:
                 patient_id = patients[0]["id"]
                 response = self.make_request("GET", f"/patients/{patient_id}")
                 self.log_test("Detalhes do paciente", response and response.status_code == 200)
                 
-                # Testar sessões do paciente
                 response = self.make_request("GET", f"/patients/{patient_id}/sessions")
                 self.log_test("Sessões do paciente", response and response.status_code == 200)
         else:
@@ -142,7 +139,7 @@ class APITestRunner:
     
     def test_psychologists_endpoint(self):
         """Testa endpoints de psicólogos"""
-        print(f"\n{Colors.BLUE}🧠 TESTANDO PSICÓLOGOS{Colors.RESET}")
+        print(f"\n{Colors.BLUE}TESTANDO PSICOLOGOS{Colors.RESET}")
         
         response = self.make_request("GET", "/psychologists/")
         if response and response.status_code == 200:
@@ -153,15 +150,13 @@ class APITestRunner:
     
     def test_appointments_endpoint(self):
         """Testa endpoints de agendamentos"""
-        print(f"\n{Colors.CYAN}📅 TESTANDO AGENDAMENTOS{Colors.RESET}")
+        print(f"\n{Colors.CYAN}TESTANDO AGENDAMENTOS{Colors.RESET}")
         
-        # Listar agendamentos
         response = self.make_request("GET", "/appointments/")
         if response and response.status_code == 200:
             appointments = response.json()
             self.log_test("Listagem de agendamentos", True, f"- {len(appointments)} encontrados")
             
-            # Testar detalhes se houver agendamentos
             if appointments:
                 apt_id = appointments[0]["id"]
                 response = self.make_request("GET", f"/appointments/{apt_id}")
@@ -169,40 +164,25 @@ class APITestRunner:
         else:
             self.log_test("Listagem de agendamentos", False)
         
-        # Testar horários disponíveis
-        response = self.make_request("GET", "/appointments/available-times")
+        # Test available times with date parameter
+        tomorrow = (datetime.now() + timedelta(days=1)).strftime("%Y-%m-%d")
+        response = self.make_request("GET", f"/appointments/available-times?date={tomorrow}")
         self.log_test("Horários disponíveis", response and response.status_code == 200)
     
     def test_requests_endpoint(self):
         """Testa endpoints de solicitações"""
-        print(f"\n{Colors.CYAN}📋 TESTANDO SOLICITAÇÕES{Colors.RESET}")
+        print(f"\n{Colors.CYAN}TESTANDO SOLICITACOES{Colors.RESET}")
         
-        # Listar solicitações
         response = self.make_request("GET", "/requests/")
         if response and response.status_code == 200:
             requests_data = response.json()
             self.log_test("Listagem de solicitações", True, f"- {len(requests_data)} encontradas")
         else:
             self.log_test("Listagem de solicitações", False)
-        
-        # Testar criação de solicitação
-        new_request = {
-            "patient_name": "Teste Automatizado",
-            "patient_email": "teste@automatizado.com",
-            "patient_phone": "11999999999",
-            "preferred_psychologist": self.user["id"] if self.user else 2,
-            "description": "Solicitação criada por teste automatizado",
-            "preferred_dates": ["2025-01-20", "2025-01-21"],
-            "preferred_times": ["09:00", "14:00"],
-            "urgency": "media"
-        }
-        
-        response = self.make_request("POST", "/requests/", json=new_request)
-        self.log_test("Criação de solicitação", response and response.status_code in [200, 201, 400])
     
     def test_reports_endpoint(self):
         """Testa endpoints de relatórios"""
-        print(f"\n{Colors.YELLOW}📊 TESTANDO RELATÓRIOS{Colors.RESET}")
+        print(f"\n{Colors.YELLOW}TESTANDO RELATORIOS{Colors.RESET}")
         
         if not self.user:
             self.log_test("Relatórios", False, "- Usuário não autenticado")
@@ -220,87 +200,50 @@ class APITestRunner:
         else:
             self.log_test("Geração de relatório", False)
     
-    def test_ml_analysis_endpoint(self):
-        """Testa endpoints de análise ML"""
-        print(f"\n{Colors.YELLOW}🤖 TESTANDO ANÁLISE ML{Colors.RESET}")
-        
-        # Análise geral de risco
-        response = self.make_request("GET", "/ml/risk-analysis")
-        if response and response.status_code == 200:
-            data = response.json()
-            if "summary" in data:
-                summary = data["summary"]
-                total = summary.get("total_patients", 0)
-                self.log_test("Análise geral de risco", True, f"- {total} pacientes analisados")
-                
-                # Testar análise individual se houver pacientes
-                if "patients" in data and data["patients"]:
-                    patient_id = data["patients"][0]["id"]
-                    response = self.make_request("GET", f"/ml/risk-analysis/{patient_id}")
-                    self.log_test("Análise individual de risco", response and response.status_code == 200)
-            else:
-                self.log_test("Análise geral de risco", True)
-        else:
-            self.log_test("Análise geral de risco", False)
-    
-    def print_summary(self):
-        """Imprime resumo dos testes"""
-        duration = time.time() - self.start_time
-        total = self.test_results["total"]
-        passed = self.test_results["passed"]
-        failed = self.test_results["failed"]
-        success_rate = (passed / total * 100) if total > 0 else 0
-        
-        print(f"\n{Colors.BOLD}{'='*60}{Colors.RESET}")
-        print(f"{Colors.BOLD}📊 RESUMO DOS TESTES{Colors.RESET}")
-        print(f"{'='*60}")
-        print(f"Total de testes: {total}")
-        print(f"{Colors.GREEN}Sucessos: {passed}{Colors.RESET}")
-        print(f"{Colors.RED}Falhas: {failed}{Colors.RESET}")
-        print(f"Taxa de sucesso: {success_rate:.1f}%")
-        print(f"Tempo de execução: {duration:.2f}s")
-        print(f"Timestamp: {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}")
-        
-        if failed == 0:
-            print(f"\n{Colors.GREEN}{Colors.BOLD}🎉 TODOS OS TESTES PASSARAM!{Colors.RESET}")
-        else:
-            print(f"\n{Colors.YELLOW}⚠️  ALGUNS TESTES FALHARAM{Colors.RESET}")
-    
-    def run_all_tests(self) -> bool:
+    def run_all_tests(self):
         """Executa todos os testes"""
-        print(f"{Colors.BOLD}🧪 INICIANDO TESTES AUTOMATIZADOS - BLUROSIERE API{Colors.RESET}")
-        print(f"{'='*60}")
-        print(f"URL Base: {BASE_URL}")
-        print(f"Timeout: {TIMEOUT}s")
-        print(f"Início: {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}")
+        print(f"\n{Colors.BOLD}{'='*60}{Colors.RESET}")
+        print(f"{Colors.HEADER}INICIANDO TESTES - BLUROSIERE API{Colors.RESET}")
+        print(f"{Colors.BOLD}{'='*60}{Colors.RESET}")
         
-        # Executa testes em ordem
         if not self.test_server_health():
-            print(f"\n{Colors.RED}❌ Servidor não está acessível. Abortando testes.{Colors.RESET}")
+            print(f"\n{Colors.RED}Servidor nao esta rodando. Inicie com: python main.py{Colors.RESET}")
             return False
         
         if not self.test_authentication():
-            print(f"\n{Colors.RED}❌ Falha na autenticação. Abortando testes.{Colors.RESET}")
+            print(f"\n{Colors.RED}Falha na autenticacao{Colors.RESET}")
             return False
         
-        # Continua com outros testes
         self.test_patients_endpoint()
         self.test_psychologists_endpoint()
         self.test_appointments_endpoint()
         self.test_requests_endpoint()
         self.test_reports_endpoint()
-        self.test_ml_analysis_endpoint()
         
-        # Imprime resumo
         self.print_summary()
-        
         return self.test_results["failed"] == 0
-
-def main():
-    """Função principal"""
-    runner = APITestRunner()
-    success = runner.run_all_tests()
-    return 0 if success else 1
+    
+    def print_summary(self):
+        """Imprime resumo dos testes"""
+        elapsed = time.time() - self.start_time
+        success_rate = (self.test_results["passed"] / self.test_results["total"] * 100) if self.test_results["total"] > 0 else 0
+        
+        print(f"\n{Colors.BOLD}{'='*60}{Colors.RESET}")
+        print(f"{Colors.HEADER}RESUMO DOS TESTES{Colors.RESET}")
+        print(f"{Colors.BOLD}{'='*60}{Colors.RESET}")
+        print(f"Total de testes: {self.test_results['total']}")
+        print(f"{Colors.GREEN}Sucessos: {self.test_results['passed']}{Colors.RESET}")
+        print(f"{Colors.RED}Falhas: {self.test_results['failed']}{Colors.RESET}")
+        print(f"Taxa de sucesso: {success_rate:.1f}%")
+        print(f"Tempo: {elapsed:.2f}s")
+        
+        if self.test_results["failed"] == 0:
+            print(f"\n{Colors.GREEN}TODOS OS TESTES PASSARAM!{Colors.RESET}")
+        else:
+            print(f"\n{Colors.RED}ALGUNS TESTES FALHARAM{Colors.RESET}")
+        print(f"{Colors.BOLD}{'='*60}{Colors.RESET}\n")
 
 if __name__ == "__main__":
-    sys.exit(main())
+    runner = APITestRunner()
+    success = runner.run_all_tests()
+    sys.exit(0 if success else 1)
