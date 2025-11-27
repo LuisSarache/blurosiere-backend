@@ -31,7 +31,7 @@ class CompleteTestRunner:
     
     def section(self, name):
         print(f"\n{Colors.BLUE}{Colors.BOLD}{'='*60}{Colors.RESET}")
-        print(f"{Colors.BLUE}{Colors.BOLD}{name}{Colors.RESET}")
+        print(f"{Colors.BLUE}{Colors.BOLD}{name.replace('🔐', '').replace('👥', '').replace('🧠', '').replace('📅', '').replace('📋', '').replace('📆', '').replace('🔔', '').replace('🤖', '').replace('📊', '').replace('📈', '').replace('🔍', '').replace('📤', '').replace('📊', '').replace('🔬', '').replace('⚙️', '')}{Colors.RESET}")
         print(f"{Colors.BLUE}{Colors.BOLD}{'='*60}{Colors.RESET}")
     
     def login(self):
@@ -295,12 +295,12 @@ class CompleteTestRunner:
         print(f"Taxa de sucesso: {success_rate:.1f}%")
         
         if self.results['failed'] == 0:
-            print(f"\n{Colors.GREEN}{Colors.BOLD}🎉 TODOS OS TESTES PASSARAM!{Colors.RESET}")
+            print(f"\n{Colors.GREEN}{Colors.BOLD}TODOS OS TESTES PASSARAM!{Colors.RESET}")
         else:
-            print(f"\n{Colors.YELLOW}⚠️ ALGUNS TESTES FALHARAM{Colors.RESET}")
+            print(f"\n{Colors.YELLOW}ALGUNS TESTES FALHARAM{Colors.RESET}")
     
     def run_all(self):
-        print(f"{Colors.BOLD}🧪 TESTES COMPLETOS - BLUROSIERE API{Colors.RESET}")
+        print(f"{Colors.BOLD}TESTES COMPLETOS - BLUROSIERE API{Colors.RESET}")
         print(f"URL: {BASE_URL}")
         print(f"Início: {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}")
         

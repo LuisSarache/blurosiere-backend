@@ -1,8 +1,9 @@
 from sqlalchemy import Column, Integer, String, DateTime, Date, ForeignKey, Text, Enum, Boolean
 from sqlalchemy.orm import relationship
 from core.database import Base
-from datetime import datetime, timezone
+from datetime import datetime, timezone, timedelta
 import enum
+import secrets
 
 class UserType(str, enum.Enum):
     PSICOLOGO = "psicologo"
@@ -32,8 +33,7 @@ class User(Base):
     phone = Column(String, nullable=True)
     created_at = Column(DateTime, default=lambda: datetime.now(timezone.utc))
     
-    # Relacionamentos
-    refresh_tokens = relationship("RefreshToken", back_populates="user")
+    # Campos adicionais
     avatar = Column(String, nullable=True)
     status = Column(String, default="ativo")
     bio = Column(Text, nullable=True)
@@ -41,6 +41,9 @@ class User(Base):
     birth_date = Column(Date, nullable=True)
     emergency_contact = Column(String, nullable=True)
     medical_history = Column(Text, nullable=True)
+    
+    # Relacionamentos
+    refresh_tokens = relationship("RefreshToken", back_populates="user")
 
 class Patient(Base):
     __tablename__ = "patients"
@@ -167,3 +170,38 @@ class Report(Base):
     
     psychologist = relationship("User", foreign_keys=[psychologist_id])
     patient = relationship("User", foreign_keys=[patient_id])
+
+class RefreshToken(Base):
+    __tablename__ = "refresh_tokens"
+    
+    id = Column(Integer, primary_key=True, index=True)
+    token = Column(String, unique=True, index=True)
+    user_id = Column(Integer, ForeignKey("users.id"))
+    expires_at = Column(DateTime)
+    is_revoked = Column(Boolean, default=False)
+    created_at = Column(DateTime, default=lambda: datetime.now(timezone.utc))
+    
+    user = relationship("User", back_populates="refresh_tokens")
+    
+    @classmethod
+    def create_token(cls, user_id: int, days: int = 7):
+        """Cria um novo refresh token"""
+        token = secrets.token_urlsafe(32)
+        expires_at = datetime.now(timezone.utc) + timedelta(days=days)
+        
+        return cls(
+            token=token,
+            user_id=user_id,
+            expires_at=expires_at
+        )
+    
+    def is_valid(self) -> bool:
+        """Verifica se o token é válido"""
+        return (
+            not self.is_revoked and 
+            self.expires_at > datetime.now(timezone.utc)
+        )
+    
+    def revoke(self):
+        """Revoga o token"""
+        self.is_revoked = True

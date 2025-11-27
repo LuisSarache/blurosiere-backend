@@ -9,7 +9,7 @@ from fastapi.responses import JSONResponse
 from core.database import engine, Base
 from routers import (
     auth, patients, psychologists, appointments, reports, requests, ml_analysis,
-    schedule, notifications, chat, dashboard, analytics, search, export, upload, websocket
+    schedule, notifications, chat, dashboard, analytics, search, export, upload, websocket, email
 )
 from dotenv import load_dotenv
 
@@ -85,22 +85,23 @@ async def http_exception_handler(request, exc):
     )
 
 # Inclui os routers com prefixos organizados
-app.include_router(auth.router, prefix="/api/v1", tags=["Autenticação"])
-app.include_router(patients.router, prefix="/api/v1", tags=["Pacientes"])
-app.include_router(psychologists.router, prefix="/api/v1", tags=["Psicólogos"])
-app.include_router(appointments.router, prefix="/api/v1", tags=["Agendamentos"])
-app.include_router(requests.router, prefix="/api/v1", tags=["Solicitações"])
-app.include_router(reports.router, prefix="/api/v1", tags=["Relatórios"])
-app.include_router(ml_analysis.router, prefix="/api/v1", tags=["Análise ML"])
-app.include_router(schedule.router, prefix="/api/v1", tags=["Agenda"])
-app.include_router(notifications.router, prefix="/api/v1", tags=["Notificações"])
-app.include_router(chat.router, prefix="/api/v1", tags=["Chat IA"])
-app.include_router(dashboard.router, prefix="/api/v1", tags=["Dashboard"])
-app.include_router(analytics.router, prefix="/api/v1", tags=["Analytics"])
-app.include_router(search.router, prefix="/api/v1", tags=["Busca"])
-app.include_router(export.router, prefix="/api/v1", tags=["Exportação"])
-app.include_router(upload.router, prefix="/api/v1", tags=["Upload"])
-app.include_router(websocket.router, tags=["WebSocket"])
+app.include_router(auth.router, prefix="/api/v1")
+app.include_router(patients.router, prefix="/api/v1")
+app.include_router(psychologists.router, prefix="/api/v1")
+app.include_router(appointments.router, prefix="/api/v1")
+app.include_router(requests.router, prefix="/api/v1")
+app.include_router(reports.router, prefix="/api/v1")
+app.include_router(ml_analysis.router, prefix="/api/v1")
+app.include_router(schedule.router, prefix="/api/v1")
+app.include_router(notifications.router, prefix="/api/v1")
+app.include_router(chat.router, prefix="/api/v1")
+app.include_router(dashboard.router, prefix="/api/v1")
+app.include_router(analytics.router, prefix="/api/v1")
+app.include_router(search.router, prefix="/api/v1")
+app.include_router(export.router, prefix="/api/v1")
+app.include_router(upload.router, prefix="/api/v1")
+app.include_router(email.router, prefix="/api/v1")
+app.include_router(websocket.router)
 
 # Endpoints principais
 @app.get("/", tags=["Sistema"])
@@ -118,8 +119,9 @@ async def health_check():
     try:
         # Testa conexão com banco
         from core.database import SessionLocal
+        from sqlalchemy import text
         db = SessionLocal()
-        db.execute("SELECT 1")
+        db.execute(text("SELECT 1"))
         db.close()
         
         return {
@@ -159,9 +161,10 @@ async def api_info():
 if __name__ == "__main__":
     import uvicorn
     port = int(os.getenv("PORT", 8000))
+    debug = os.getenv("DEBUG", "True").lower() == "true"
     uvicorn.run(
-        app,
+        "main:app",
         host="0.0.0.0",
         port=port,
-        reload=os.getenv("DEBUG", "False").lower() == "true"
+        reload=debug
     )
