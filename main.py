@@ -51,13 +51,13 @@ app = FastAPI(
     lifespan=lifespan
 )
 
-# Middleware de segurança
-if not debug_mode:
-    allowed_hosts = os.getenv("ALLOWED_HOSTS", "localhost,127.0.0.1").split(",")
-    app.add_middleware(
-        TrustedHostMiddleware,
-        allowed_hosts=[host.strip() for host in allowed_hosts]
-    )
+# Middleware de segurança (desabilitado para permitir Render)
+# if not debug_mode:
+#     allowed_hosts = os.getenv("ALLOWED_HOSTS", "localhost,127.0.0.1").split(",")
+#     app.add_middleware(
+#         TrustedHostMiddleware,
+#         allowed_hosts=[host.strip() for host in allowed_hosts]
+#     )
 
 # Configuração CORS
 cors_origins = [origin.strip() for origin in os.getenv("CORS_ORIGINS", "http://localhost:3000").split(",")]
