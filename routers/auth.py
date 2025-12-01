@@ -1,7 +1,8 @@
 from fastapi import APIRouter, Depends, HTTPException, status
 from sqlalchemy.orm import Session
 from core.database import get_db
-from models.models import User, Patient, UserType, RefreshToken
+from models.models import User, Patient, UserType
+from models.refresh_token import RefreshToken
 from schemas.schemas import (
     UserCreate, UserLogin, Token, User as UserSchema,
     RefreshTokenRequest, ForgotPasswordRequest, ResetPasswordRequest
