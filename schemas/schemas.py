@@ -16,7 +16,7 @@ class UserCreate(UserBase):
     specialty: Optional[str] = None
     crp: Optional[str] = None
     phone: Optional[str] = None
-    birth_date: date
+    birth_date: Optional[date] = None
 
 class UserLogin(BaseModel):
     email: EmailStr
