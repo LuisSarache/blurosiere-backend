@@ -11,7 +11,7 @@ services:
       - key: SECRET_KEY
         generateValue: true
       - key: CORS_ORIGINS
-        value: "*"
+        value: "http://localhost:5173,https://blurosiere-front.vercel.app"
       - key: DEBUG
         value: "False"
       - key: DATABASE_URL
