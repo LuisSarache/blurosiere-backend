@@ -58,7 +58,6 @@ async def create_request(
         )
    
     db_request = Request(
-        patient_id=request_data.patient_id,
         patient_name=request_data.patient_name,
         patient_email=request_data.patient_email,
         patient_phone=request_data.patient_phone,

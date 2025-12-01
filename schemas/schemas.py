@@ -17,6 +17,15 @@ class UserCreate(UserBase):
     crp: Optional[str] = None
     phone: Optional[str] = None
     birth_date: Optional[date] = None
+    
+    @field_validator('password')
+    @classmethod
+    def validate_password(cls, v: str) -> str:
+        if len(v) > 72:
+            raise ValueError('Senha não pode ter mais de 72 caracteres')
+        if len(v) < 6:
+            raise ValueError('Senha deve ter pelo menos 6 caracteres')
+        return v
 
 class UserLogin(BaseModel):
     email: EmailStr
