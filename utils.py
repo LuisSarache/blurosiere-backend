@@ -34,7 +34,6 @@ except (ValueError, TypeError):
 # CONFIGURAÇÃO DO HASH DE SENHA (Bcrypt)
 # ============================================================
 
-# Define o contexto de criptografia usando o algoritmo bcrypt
 pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 
 # ------------------------------------------------------------
@@ -53,9 +52,8 @@ def verify_password(plain_password, hashed_password):
 def get_password_hash(password):
     """
     Recebe a senha em texto puro e retorna seu hash criptografado com bcrypt.
-    Bcrypt tem limite de 72 bytes.
     """
-    # Trunca para 72 caracteres (limite do bcrypt)
+    # Trunca para 72 caracteres (limite do bcrypt 3.x)
     if len(password) > 72:
         password = password[:72]
     return pwd_context.hash(password)
