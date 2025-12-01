@@ -7,7 +7,7 @@ from models.models import User, UserType  # Importa o modelo User e enumeração
 from schemas.schemas import Psychologist  # Importa o schema para a resposta da rota
 
 # Criação do roteador FastAPI para a entidade "psychologists"
-router = APIRouter(prefix="/psychologists", tags=["psychologists"])
+router = APIRouter(prefix="/psychologists", tags=["psychologists"], redirect_slashes=False)
 
 # ======================================
 # Rota para listar todos os psicólogos

@@ -9,7 +9,7 @@ from services.email_service import send_email_new_request_to_psychologist, send_
 import json
 from datetime import datetime
  
-router = APIRouter(prefix="/requests", tags=["requests"])
+router = APIRouter(prefix="/requests", tags=["requests"], redirect_slashes=False)
  
 @router.get("/", response_model=List[RequestSchema])
 async def get_requests(
