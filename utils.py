@@ -16,8 +16,9 @@ load_dotenv()
 # Recupera a chave secreta usada para assinar tokens JWT
 SECRET_KEY = os.getenv("SECRET_KEY")
 if not SECRET_KEY:
-    # Garante que a aplicação não inicie sem uma chave segura
-    raise ValueError("SECRET_KEY deve ser definida nas variáveis de ambiente")
+    # Fallback para desenvolvimento - NUNCA use em produção
+    SECRET_KEY = "dev-secret-key-change-in-production-min-32-chars-required-for-security"
+    print("⚠️  WARNING: Using default SECRET_KEY. Set SECRET_KEY environment variable in production!")
 
 # Define o algoritmo de criptografia a ser usado no JWT (padrão: HS256)
 ALGORITHM = os.getenv("ALGORITHM", "HS256")
@@ -59,7 +60,7 @@ def get_password_hash(password):
 # CRIAÇÃO DE TOKEN JWT (Autenticação)
 # ============================================================
 
-def create_access_token(data: dict, expires_delta: timedelta = None):
+def create_access_token(data: dict, expires_delta: timedelta | None = None):
     """
     Cria um token JWT com base nos dados do usuário.
     - 'data' contém as informações (claims) que serão codificadas no token.

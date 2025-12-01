@@ -3,7 +3,8 @@ Configurações centralizadas da aplicação Blurosiere
 """
 import os
 from typing import List
-from pydantic import BaseSettings, validator
+from pydantic_settings import BaseSettings
+from pydantic import field_validator
 
 
 class Settings(BaseSettings):
@@ -30,12 +31,14 @@ class Settings(BaseSettings):
     risk_threshold_high: int = 70
     risk_threshold_moderate: int = 40
     
-    @validator('cors_origins')
+    @field_validator('cors_origins')
+    @classmethod
     def parse_cors_origins(cls, v: str) -> List[str]:
         """Converte string de origens CORS em lista"""
         return [origin.strip() for origin in v.split(",")]
     
-    @validator('secret_key')
+    @field_validator('secret_key')
+    @classmethod
     def validate_secret_key(cls, v: str) -> str:
         """Valida se a chave secreta tem tamanho mínimo"""
         if len(v) < 32:

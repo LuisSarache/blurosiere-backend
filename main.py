@@ -41,20 +41,22 @@ async def lifespan(app: FastAPI):
     logger.info("Encerrando aplicação Blurosiere API")
 
 # Configuração da aplicação
+debug_mode = os.getenv("DEBUG", "False").lower() == "true"
 app = FastAPI(
     title=os.getenv("APP_NAME", "Blurosiere API"),
     description="Sistema completo de agendamento psicológico com análise de risco ML",
     version=os.getenv("APP_VERSION", "1.0.0"),
-    docs_url="/docs" if os.getenv("DEBUG", "False").lower() == "true" else None,
-    redoc_url="/redoc" if os.getenv("DEBUG", "False").lower() == "true" else None,
+    docs_url="/docs",
+    redoc_url="/redoc",
     lifespan=lifespan
 )
 
 # Middleware de segurança
-if os.getenv("DEBUG", "False").lower() != "true":
+if not debug_mode:
+    allowed_hosts = os.getenv("ALLOWED_HOSTS", "localhost,127.0.0.1").split(",")
     app.add_middleware(
         TrustedHostMiddleware,
-        allowed_hosts=["localhost", "127.0.0.1", "*.vercel.app"]
+        allowed_hosts=[host.strip() for host in allowed_hosts]
     )
 
 # Configuração CORS
@@ -110,7 +112,7 @@ async def root():
     return {
         "message": "Blurosiere API - Sistema de Agendamento Psicológico",
         "version": os.getenv("APP_VERSION", "1.0.0"),
-        "docs": "/docs" if os.getenv("DEBUG", "False").lower() == "true" else "Documentação desabilitada em produção"
+        "docs": "/docs"
     }
 
 @app.get("/health", tags=["Sistema"])
@@ -146,7 +148,7 @@ async def api_info():
     return {
         "name": os.getenv("APP_NAME", "Blurosiere API"),
         "version": os.getenv("APP_VERSION", "1.0.0"),
-        "environment": "development" if os.getenv("DEBUG", "False").lower() == "true" else "production",
+        "environment": "development" if debug_mode else "production",
         "endpoints": {
             "auth": "/api/v1/auth",
             "patients": "/api/v1/patients",
